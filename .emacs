@@ -1,4 +1,8 @@
-test(let ((base "C:/Users/Alex/Projects/emacs"))
+(let ((base (if (or (eq system-type 'cygwin)
+                    (eq system-type 'gnu/linux)
+                    (eq system-type 'linux))
+                    "/home/alex/Projects/emacs"
+                    "C:/Users/Alex/Projects/emacs")))
   (add-to-list 'load-path base)
   (dolist (f (directory-files base))
     (let ((name (concat base "/" f)))
