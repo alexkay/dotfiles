@@ -1,5 +1,5 @@
 [core]
-	autocrlf = true
+	autocrlf = false
 [user]
 	name = Alexander Kojevnikov
 	email = alexander@kojevnikov.com
@@ -12,3 +12,5 @@
 [gui]
 	fontui = -family \"Segoe UI\" -size 10 -weight normal -slant roman -underline 0 -overstrike 0
 	fontdiff = -family Consolas -size 12 -weight normal -slant roman -underline 0 -overstrike 0
+[github]
+	token = 2b1a9434dd13f4281fdfde8670d880dd
