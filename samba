@@ -1,0 +1,9 @@
+[storage]
+    path = /media/storage
+    browseable = yes
+    read only = no
+    guest ok = no
+    force user = alex
+    valid users = alex, olga
+    create mask = 0644
+    directory mask = 0755
