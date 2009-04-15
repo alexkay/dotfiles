@@ -14,5 +14,3 @@
 	fontdiff = -family \"DejaVu Sans Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
 [github]
 	token = 2b1a9434dd13f4281fdfde8670d880dd
-[diff]
-	external = /home/alex/Projects/dotfiles/git-meld.sh
