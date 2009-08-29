@@ -1,1 +1,16 @@
-/home/alex/.gitconfig
+[core]
+	autocrlf = false
+[user]
+	name = Alexander Kojevnikov
+	email = alexander@kojevnikov.com
+[color]
+	status = auto
+	branch = auto
+	diff = auto
+[svn]
+	rmdir = true
+[gui]
+	fontui = -family \"DejaVu Sans\" -size 10 -weight normal -slant roman -underline 0 -overstrike 0
+	fontdiff = -family \"DejaVu Sans Mono\" -size 12 -weight normal -slant roman -underline 0 -overstrike 0
+[github]
+	token = 2b1a9434dd13f4281fdfde8670d880dd
