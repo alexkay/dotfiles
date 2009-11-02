@@ -20,6 +20,7 @@ main = do
          , logHook = updatePointer (Relative 0.5 0.5)
          , manageHook = composeAll
              [ manageHook gnomeConfig
+             , isFullscreen --> doFullFloat
              , title =? "VLC (XVideo output)" --> doFullFloat
              , className =? "Gcalctool" --> doCenterFloat
              , className =? "Pidgin" --> doCenterFloat
