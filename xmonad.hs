@@ -1,6 +1,7 @@
 import XMonad
 import XMonad.Config.Gnome
 import XMonad.Actions.Submap
+import XMonad.Actions.UpdatePointer
 import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
 
@@ -13,10 +14,16 @@ main :: IO ()
 main = do
     xmonad $ gnomeConfig
          { terminal = "gnome-terminal"
-         , focusFollowsMouse = False
          , borderWidth = 2
          , keys = addPrefix (controlMask, xK_m) (newKeys)
          , layoutHook = smartBorders $ layoutHook gnomeConfig
+         , logHook = updatePointer (Relative 0.5 0.5)
+         , manageHook = composeAll
+             [ manageHook gnomeConfig
+             , title =? "VLC (XVideo output)" --> doFullFloat
+             , className =? "Gcalctool" --> doCenterFloat
+             , className =? "Pidgin" --> doCenterFloat
+             ]
          }
 
 myKeys x =
