@@ -24,6 +24,7 @@ main = do
              , title =? "VLC (XVideo output)" --> doFullFloat
              , className =? "Gcalctool" --> doCenterFloat
              , className =? "Pidgin" --> doCenterFloat
+             , className =? "Skype" --> doCenterFloat
              ]
          }
 
