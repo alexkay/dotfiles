@@ -13,6 +13,7 @@ import Data.Bits
 import qualified Data.Map as M
 import Data.Monoid
 
+{-
 import DBus
 import DBus.Connection
 import DBus.Message
@@ -28,18 +29,22 @@ getWellKnownName dbus = tryGetName `catchDyn` (\ (DBus.Error _ _) ->
     addArgs namereq [String "org.xmonad.Log", Word32 5]
     sendWithReplyAndBlock dbus namereq 0
     return ()
+-}
 
 main :: IO ()
-main = withConnection Session $ \ dbus -> do
+main = {- withConnection Session $ \ dbus -> -} do
+{-
     putStrLn "Getting well-known name."
     getWellKnownName dbus
     putStrLn "Got name, starting XMonad."
+-}
     xmonad $ gnomeConfig
          { terminal = "gnome-terminal"
          , borderWidth = 2
          , keys = addPrefix (controlMask, xK_m) (newKeys)
          , layoutHook = smartBorders $ layoutHook gnomeConfig
-         --, logHook = updatePointer (Relative 0.5 0.5)
+--         , logHook = updatePointer (Relative 0.5 0.5)
+{-
          , logHook    = dynamicLogWithPP $ defaultPP {
                    ppOutput   = \ str -> do
                      let str'  = "<span font=\"Sans 10 Bold\">" ++ str ++ "</span>"
@@ -60,6 +65,7 @@ main = withConnection Session $ \ dbus -> do
                  , ppLayout   = const ""
                  , ppSep      = " "
                  }
+-}
          , manageHook = composeAll
              [ manageHook gnomeConfig
              , isFullscreen --> doFullFloat
@@ -73,6 +79,7 @@ main = withConnection Session $ \ dbus -> do
              ]
          }
 
+{-
 pangoColor :: String -> String -> String
 pangoColor fg = wrap left right
  where
@@ -83,6 +90,7 @@ sanitize :: String -> String
 sanitize [] = []
 sanitize (x:rest) | fromEnum x > 127 = "&#" ++ show (fromEnum x) ++ ";" ++ sanitize rest
                   | otherwise        = x : sanitize rest
+-}
 
 myKeys x =
     [ ((modMask x, xK_f), fullFloatFocused)

@@ -1,6 +1,7 @@
 (let ((base (if (or (eq system-type 'cygwin)
                     (eq system-type 'gnu/linux)
-                    (eq system-type 'linux))
+                    (eq system-type 'linux)
+                    (eq system-type 'berkeley-unix))
                     "/home/alex/Projects/emacs"
                     "C:/Users/Alex/Projects/emacs")))
   (add-to-list 'load-path base)
