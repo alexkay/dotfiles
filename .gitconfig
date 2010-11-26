@@ -4,11 +4,6 @@
        name = Alexander Kojevnikov
        email = alexander@kojevnikov.com
 [color]
-       status = auto
-       branch = auto
-       diff = auto
+       ui = auto
 [svn]
        rmdir = true
-[gui]
-       fontui = -family \"DejaVu Sans\" -size 10 -weight normal -slant roman -un
-       fontdiff = -family \"DejaVu Sans Mono\" -size 12 -weight normal -slant ro
