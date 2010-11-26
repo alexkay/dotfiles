@@ -1,0 +1,35 @@
+" {{{ Options
+"
+" No toolbar and scrollbars by default
+set go-=brT
+
+" Editor, C-i invokes it in text fields
+set editor=emacsclient
+
+" Command line and search patterns history
+set history=10000
+
+" Show pattern matches as you type
+set incsearch
+
+" Hilight previous search pattern matches
+set hlsearch
+
+" Override ignorecase if pattern has uppercase chars
+set smartcase
+
+" Focus content after a page has loaded
+set focuscontent
+
+" Show destination links in 1=status line, 2=command line
+set showstatuslinks=2
+
+" Show completions and use AwesomeBar (+search plugins)
+set complete=sl
+set wildoptions=auto
+
+" Ex commands output in a new tab by default (prefs, addons...)
+set newtab=all
+" }}}
+
+echo "[vimperator initialized]"
