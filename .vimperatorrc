@@ -1,7 +1,8 @@
 " {{{ Options
 "
 " No toolbar and scrollbars by default
-set go-=brT
+set toolbars=nomenu
+" set scrollbars=false ~ FIXME: doesn't work
 
 " Editor, C-i invokes it in text fields
 set editor=emacsclient
@@ -26,7 +27,6 @@ set showstatuslinks=2
 
 " Show completions and use AwesomeBar (+search plugins)
 set complete=sl
-set wildoptions=auto
 
 " Ex commands output in a new tab by default (prefs, addons...)
 set newtab=all
