@@ -1,4 +1,3 @@
-WORDCHARS=${WORDCHARS:s,/,,}
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
@@ -22,6 +21,8 @@ setopt promptsubst
 autoload -U promptinit
 promptinit
 prompt wunjo
+
+WORDCHARS=${WORDCHARS//[-\/_]}
 
 export BANSHEE_DEV_OPTIONS="--db=$HOME/.config/banshee-1/banshee.dev.db --gconf-base-key=/apps/banshee-1-dev/ --debug-metrics --validate-db-schema"
 export EDITOR="emacsclient"
