@@ -1,0 +1,10 @@
+auto-reload yes
+browser lynx
+goto-first-unread yes
+goto-next-feed yes
+reload-threads 10
+# save-path ~/
+# show-keymap-hint yes
+show-read-feeds no
+show-read-articles no
+# text-width 0
