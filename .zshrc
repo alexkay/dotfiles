@@ -8,6 +8,7 @@ setopt HIST_IGNORE_ALL_DUPS
 
 export LANG="en_GB.UTF-8"
 export LC_ALL="en_GB.UTF-8"
+export PAGER=less
 
 setopt extendedglob
 unsetopt beep
