@@ -26,7 +26,7 @@ autoload -U promptinit
 promptinit
 prompt wunjo
 
-WORDCHARS=${WORDCHARS//[-\/_]}
+WORDCHARS=${WORDCHARS//[-\/_.]}
 
 export BANSHEE_DEV_OPTIONS="--db=$HOME/.config/banshee-1/banshee.dev.db --gconf-base-key=/apps/banshee-1-dev/ --debug-metrics --validate-db-schema"
 export GNOME_FTP_USER=alexk
