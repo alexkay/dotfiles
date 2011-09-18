@@ -52,7 +52,7 @@ main =  withConnection Session $ \ dbus ->  do
                        (\ (DBus.Error _name _msg) ->
                          return 0)
                      return ()
-                 , ppTitle    = pangoColor "#FFFFFF" . shorten 60
+                 , ppTitle    = pangoColor "#FFFFFF" -- . shorten 60
                  , ppCurrent  = pangoColor "green" . wrap "[" "]"
                  , ppVisible  = pangoColor "yellow" . wrap "(" ")"
                  , ppHidden   = const "" --wrap " " " "
