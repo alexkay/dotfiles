@@ -1,12 +1,10 @@
 import XMonad
 import XMonad.Config.Gnome
 import XMonad.Actions.Submap
-import XMonad.Actions.UpdatePointer
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
 
-import Codec.Binary.UTF8.String
 import Control.Arrow
 import Control.OldException
 import Data.Bits
@@ -41,9 +39,9 @@ main =  withConnection Session $ \dbus -> do
          }
 
 newKeys x  =
-    M.union (keys gnomeConfig x) (M.fromList (newKeys x))
+    M.union (keys gnomeConfig x) (M.fromList (myKeys x))
   where
-    newKeys x =
+    myKeys x =
         [ ((modMask x, xK_f), fullFloatFocused)
         ]
 
