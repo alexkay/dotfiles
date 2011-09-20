@@ -18,33 +18,15 @@ import DBus.Connection
 import DBus.Message
 
 main :: IO ()
-main =  withConnection Session $ \ dbus -> do
+main =  withConnection Session $ \dbus -> do
     getWellKnownName dbus
     xmonad $ gnomeConfig
-         { terminal = "gnome-terminal"
+         { modMask = mod4Mask
+         , terminal = "gnome-terminal"
          , borderWidth = 2
          , keys = addPrefix (controlMask, xK_m) (newKeys)
          , layoutHook = smartBorders $ layoutHook gnomeConfig
-         , logHook    = dynamicLogWithPP $ defaultPP {
-                   ppOutput   = \ str -> do
-                     let str'  = "<span font=\"Sans 10 Bold\">" ++ str ++ "</span>"
-                         str'' = sanitize $ decodeString str'
-                     msg <- newSignal "/org/xmonad/Log" "org.xmonad.Log"
-                                "Update"
-                     addArgs msg [String str'']
-                     -- If the send fails, ignore it.
-                     send dbus msg 0 `catchDyn`
-                       (\ (DBus.Error _name _msg) ->
-                         return 0)
-                     return ()
-                 , ppTitle    = pangoColor "white"
-                 , ppCurrent  = pangoColor "green" . wrap "[" "]"
-                 , ppVisible  = pangoColor "yellow" . wrap "(" ")"
-                 , ppHidden   = const "" --wrap " " " "
-                 , ppUrgent   = pangoColor "red"
-                 , ppLayout   = const ""
-                 , ppSep      = " "
-                 }
+         , logHook    = dynamicLogWithPP (prettyPrinter dbus)
          , manageHook = composeAll
              [ manageHook gnomeConfig
              , isFullscreen --> doFullFloat
@@ -59,11 +41,11 @@ main =  withConnection Session $ \ dbus -> do
          }
 
 newKeys x  =
-    M.union (keys gnomeConfig x) (M.fromList (myKeys x))
+    M.union (keys gnomeConfig x) (M.fromList (newKeys x))
   where
-    myKeys x =
-      [ ((modMask x, xK_f), fullFloatFocused)
-      ]
+    newKeys x =
+        [ ((modMask x, xK_f), fullFloatFocused)
+        ]
 
 addPrefix p ms conf =
     M.singleton p . submap $ M.mapKeys (first chopMod) (ms conf)
@@ -76,6 +58,18 @@ fullFloatFocused =
 
 -- xmonad-log-applet hook
 
+prettyPrinter :: Connection -> PP
+prettyPrinter dbus = defaultPP
+    { ppOutput   = dbusOutput dbus
+    , ppTitle    = pangoSanitize
+    , ppCurrent  = pangoColor "green" . wrap "[" "]" . pangoSanitize
+    , ppVisible  = pangoColor "yellow" . wrap "(" ")" . pangoSanitize
+    , ppHidden   = const ""
+    , ppUrgent   = pangoColor "red"
+    , ppLayout   = const ""
+    , ppSep      = " "
+    }
+
 getWellKnownName :: Connection -> IO ()
 getWellKnownName dbus = tryGetName `catchDyn` (\(DBus.Error _ _) -> getWellKnownName dbus)
   where
@@ -85,13 +79,25 @@ getWellKnownName dbus = tryGetName `catchDyn` (\(DBus.Error _ _) -> getWellKnown
         sendWithReplyAndBlock dbus namereq 0
         return ()
 
+dbusOutput :: Connection -> String -> IO ()
+dbusOutput dbus str = do
+    msg <- newSignal "/org/xmonad/Log" "org.xmonad.Log" "Update"
+    addArgs msg [String ("<b>" ++ str ++ "</b>")]
+    -- If the send fails, ignore it.
+    send dbus msg 0 `catchDyn` (\(DBus.Error _ _) -> return 0)
+    return ()
+
 pangoColor :: String -> String -> String
 pangoColor fg = wrap left right
  where
   left  = "<span foreground=\"" ++ fg ++ "\">"
   right = "</span>"
 
-sanitize :: String -> String
-sanitize [] = []
-sanitize (x:rest) | fromEnum x > 127 = "&#" ++ show (fromEnum x) ++ ";" ++ sanitize rest
-                  | otherwise        = x : sanitize rest
+pangoSanitize :: String -> String
+pangoSanitize = foldr sanitize ""
+  where
+    sanitize '>'  xs = "&gt;" ++ xs
+    sanitize '<'  xs = "&lt;" ++ xs
+    sanitize '\"' xs = "&quot;" ++ xs
+    sanitize '&'  xs = "&amp;" ++ xs
+    sanitize x    xs = x:xs
