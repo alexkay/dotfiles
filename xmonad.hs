@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 import XMonad
 import XMonad.Config.Gnome
 import XMonad.Actions.Submap
@@ -6,17 +8,16 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
 
 import Control.Arrow
-import Control.OldException
 import Data.Bits
 import qualified Data.Map as M
 import Data.Monoid
 
-import DBus
-import DBus.Connection
-import DBus.Message
+import qualified DBus.Client.Simple as D
+import qualified Codec.Binary.UTF8.String as UTF8
 
 main :: IO ()
-main =  withConnection Session $ \dbus -> do
+main = do
+    dbus <- D.connectSession
     getWellKnownName dbus
     xmonad $ gnomeConfig
          { modMask = mod4Mask
@@ -56,7 +57,7 @@ fullFloatFocused =
 
 -- xmonad-log-applet hook
 
-prettyPrinter :: Connection -> PP
+prettyPrinter :: D.Client -> PP
 prettyPrinter dbus = defaultPP
     { ppOutput   = dbusOutput dbus
     , ppTitle    = pangoSanitize
@@ -68,22 +69,19 @@ prettyPrinter dbus = defaultPP
     , ppSep      = " "
     }
 
-getWellKnownName :: Connection -> IO ()
-getWellKnownName dbus = tryGetName `catchDyn` (\(DBus.Error _ _) -> getWellKnownName dbus)
-  where
-    tryGetName = do
-        namereq <- newMethodCall serviceDBus pathDBus interfaceDBus "RequestName"
-        addArgs namereq [String "org.xmonad.Log", Word32 5]
-        sendWithReplyAndBlock dbus namereq 0
-        return ()
-
-dbusOutput :: Connection -> String -> IO ()
-dbusOutput dbus str = do
-    msg <- newSignal "/org/xmonad/Log" "org.xmonad.Log" "Update"
-    addArgs msg [String ("<b>" ++ str ++ "</b>")]
-    -- If the send fails, ignore it.
-    send dbus msg 0 `catchDyn` (\(DBus.Error _ _) -> return 0)
+getWellKnownName :: D.Client -> IO ()
+getWellKnownName dbus = do
+    D.requestName dbus (D.busName_ "org.xmonad.Log")
+        [D.AllowReplacement, D.ReplaceExisting, D.DoNotQueue]
     return ()
+
+dbusOutput :: D.Client -> String -> IO ()
+dbusOutput dbus str =
+    D.emit dbus
+        "/org/xmonad/Log"
+        "org.xmonad.Log"
+        "Update"
+        [D.toVariant ("<b>" ++ (UTF8.decodeString str) ++ "</b>")]
 
 pangoColor :: String -> String -> String
 pangoColor fg = wrap left right
