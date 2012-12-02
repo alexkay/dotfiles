@@ -26,7 +26,7 @@ prompt wunjo
 
 WORDCHARS=${WORDCHARS//[-\/_.]}
 
-export PATH=$PATH:$HOME/.cabal/bin
+export PATH=$HOME/.cabal/bin:$HOME/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 export BANSHEE_DEV_OPTIONS="--db=$HOME/.config/banshee-1/banshee.dev.db --gconf-base-key=/apps/banshee-1-dev/ --debug-metrics --validate-db-schema"
 export GNOME_FTP_USER=alexk
 export EDITOR="emacsclient"
