@@ -1,5 +1,5 @@
 import XMonad
-import XMonad.Config.Gnome
+import XMonad.Config.Xfce
 import XMonad.Actions.Submap
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers
@@ -18,28 +18,28 @@ import DBus.Message
 main :: IO ()
 main =  withConnection Session $ \dbus -> do
     getWellKnownName dbus
-    xmonad $ gnomeConfig
+    xmonad $ xfceConfig
          { modMask = mod4Mask
-         , terminal = "gnome-terminal"
+         , terminal = "Terminal"
          , borderWidth = 2
          , keys = addPrefix (controlMask, xK_m) (newKeys)
-         , layoutHook = smartBorders $ layoutHook gnomeConfig
+         , layoutHook = smartBorders $ layoutHook xfceConfig
          , logHook    = dynamicLogWithPP (prettyPrinter dbus)
          , manageHook = composeAll
-             [ manageHook gnomeConfig
+             [ manageHook xfceConfig
              , isFullscreen --> doFullFloat
              , title =? "VLC (XVideo output)" --> doFullFloat
              , className =? "Gcalctool" --> doCenterFloat
              , (className =? "Pidgin" <&&> title =? "Buddy List") --> doCenterFloat
              , className =? "Skype" --> doCenterFloat
-             , (className =? "Gnome-panel" <&&> title =? "Run Application") --> doCenterFloat
+             , title =? "Application Finder" --> doCenterFloat
              , title =? "Find in Files" --> doCenterFloat -- MD
              , title =? "NVIDIA X Server Settings" --> doCenterFloat
              ]
          }
 
 newKeys x  =
-    M.union (keys gnomeConfig x) (M.fromList (myKeys x))
+    M.union (keys xfceConfig x) (M.fromList (myKeys x))
   where
     myKeys x =
         [ ((modMask x, xK_f), fullFloatFocused)
