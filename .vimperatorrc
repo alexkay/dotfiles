@@ -16,6 +16,8 @@ set incsearch
 " Hilight previous search pattern matches
 set hlsearch
 
+set defsearch=duckduckgo
+
 " Override ignorecase if pattern has uppercase chars
 set smartcase
 
