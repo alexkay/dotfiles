@@ -5,8 +5,9 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
 
+import qualified Codec.Binary.UTF8.String as UTF8
 import Control.Arrow
-import Control.OldException
+import Control.Exception
 import Data.Bits
 import qualified Data.Map as M
 import Data.Monoid
@@ -33,6 +34,7 @@ main =  withConnection Session $ \dbus -> do
              , (className =? "Pidgin" <&&> title =? "Buddy List") --> doCenterFloat
              , className =? "Skype" --> doCenterFloat
              , title =? "Application Finder" --> doCenterFloat
+             , title =? "File Operation Progress" --> doCenterFloat
              , title =? "Find in Files" --> doCenterFloat -- MD
              , title =? "NVIDIA X Server Settings" --> doCenterFloat
              ]
@@ -56,7 +58,7 @@ fullFloatFocused =
 
 -- xmonad-log-applet hook
 
-prettyPrinter :: Connection -> PP
+prettyPrinter :: DBus.Connection.Connection -> PP
 prettyPrinter dbus = defaultPP
     { ppOutput   = dbusOutput dbus
     , ppTitle    = pangoSanitize
@@ -68,8 +70,8 @@ prettyPrinter dbus = defaultPP
     , ppSep      = " "
     }
 
-getWellKnownName :: Connection -> IO ()
-getWellKnownName dbus = tryGetName `catchDyn` (\(DBus.Error _ _) -> getWellKnownName dbus)
+getWellKnownName :: DBus.Connection.Connection -> IO ()
+getWellKnownName dbus = tryGetName `catch` (\(DBus.Error _ _) -> getWellKnownName dbus)
   where
     tryGetName = do
         namereq <- newMethodCall serviceDBus pathDBus interfaceDBus "RequestName"
@@ -77,12 +79,12 @@ getWellKnownName dbus = tryGetName `catchDyn` (\(DBus.Error _ _) -> getWellKnown
         sendWithReplyAndBlock dbus namereq 0
         return ()
 
-dbusOutput :: Connection -> String -> IO ()
+dbusOutput :: DBus.Connection.Connection -> String -> IO ()
 dbusOutput dbus str = do
     msg <- newSignal "/org/xmonad/Log" "org.xmonad.Log" "Update"
-    addArgs msg [String ("<b>" ++ str ++ "</b>")]
+    addArgs msg [String ("<b>" ++ (UTF8.decodeString str) ++ "</b>")]
     -- If the send fails, ignore it.
-    send dbus msg 0 `catchDyn` (\(DBus.Error _ _) -> return 0)
+    send dbus msg 0 `catch` (\(DBus.Error _ _) -> return 0)
     return ()
 
 pangoColor :: String -> String -> String
