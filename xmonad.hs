@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 import XMonad
 import XMonad.Config.Xfce
 import XMonad.Actions.Submap
@@ -8,17 +6,17 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
 
 import Control.Arrow
+import Control.OldException
 import Data.Bits
 import qualified Data.Map as M
 import Data.Monoid
 
-import qualified DBus as D
-import qualified DBus.Client as D
-import qualified Codec.Binary.UTF8.String as UTF8
+import DBus
+import DBus.Connection
+import DBus.Message
 
 main :: IO ()
-main = do
-    dbus <- D.connectSession
+main =  withConnection Session $ \dbus -> do
     getWellKnownName dbus
     xmonad $ xfceConfig
          { modMask = mod4Mask
@@ -58,7 +56,7 @@ fullFloatFocused =
 
 -- xmonad-log-applet hook
 
-prettyPrinter :: D.Client -> PP
+prettyPrinter :: Connection -> PP
 prettyPrinter dbus = defaultPP
     { ppOutput   = dbusOutput dbus
     , ppTitle    = pangoSanitize
@@ -70,18 +68,22 @@ prettyPrinter dbus = defaultPP
     , ppSep      = " "
     }
 
-getWellKnownName :: D.Client -> IO ()
-getWellKnownName dbus = do
-    D.requestName dbus (D.busName_ "org.xmonad.Log")
-        [D.nameAllowReplacement, D.nameReplaceExisting, D.nameDoNotQueue]
-    return ()
+getWellKnownName :: Connection -> IO ()
+getWellKnownName dbus = tryGetName `catchDyn` (\(DBus.Error _ _) -> getWellKnownName dbus)
+  where
+    tryGetName = do
+        namereq <- newMethodCall serviceDBus pathDBus interfaceDBus "RequestName"
+        addArgs namereq [String "org.xmonad.Log", Word32 5]
+        sendWithReplyAndBlock dbus namereq 0
+        return ()
 
-dbusOutput :: D.Client -> String -> IO ()
+dbusOutput :: Connection -> String -> IO ()
 dbusOutput dbus str = do
-    let signal = (D.signal "/org/xmonad/Log" "org.xmonad.Log" "Update") {
-            D.signalBody = [D.toVariant ("<b>" ++ (UTF8.decodeString str) ++ "</b>")]
-        }
-    D.emit dbus signal
+    msg <- newSignal "/org/xmonad/Log" "org.xmonad.Log" "Update"
+    addArgs msg [String ("<b>" ++ str ++ "</b>")]
+    -- If the send fails, ignore it.
+    send dbus msg 0 `catchDyn` (\(DBus.Error _ _) -> return 0)
+    return ()
 
 pangoColor :: String -> String -> String
 pangoColor fg = wrap left right
