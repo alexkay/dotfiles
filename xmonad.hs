@@ -20,41 +20,36 @@ main :: IO ()
 main =  withConnection Session $ \dbus -> do
     getWellKnownName dbus
     xmonad $ xfceConfig
-         { modMask = mod4Mask
-         , terminal = "xfce4-terminal"
-         , borderWidth = 2
-         , keys = addPrefix (controlMask, xK_m) (newKeys)
-         , layoutHook = smartBorders $ layoutHook xfceConfig
-         , logHook    = dynamicLogWithPP (prettyPrinter dbus)
-         , manageHook = composeAll
-             [ manageHook xfceConfig
-             , isFullscreen --> doFullFloat
-             , title =? "VLC (XVideo output)" --> doFullFloat
-             , className =? "Gcalctool" --> doCenterFloat
-             , (className =? "Pidgin" <&&> title =? "Buddy List") --> doCenterFloat
-             , className =? "Skype" --> doCenterFloat
-             , title =? "Application Finder" --> doCenterFloat
-             , title =? "File Operation Progress" --> doCenterFloat
-             , title =? "Find in Files" --> doCenterFloat -- MD
-             , title =? "NVIDIA X Server Settings" --> doCenterFloat
-             ]
-         }
+        { modMask    = mod4Mask
+        , terminal   = "xfce4-terminal"
+        , keys       = addPrefix (controlMask, xK_m) (newKeys)
+        , layoutHook = smartBorders $ layoutHook xfceConfig
+        , logHook    = dynamicLogWithPP (prettyPrinter dbus)
+        , manageHook = composeAll
+            [ manageHook xfceConfig
+            , isFullscreen --> doFullFloat
+            , title =? "Application Finder" --> doCenterFloat
+            , title =? "Buddy List" --> doCenterFloat
+            , title =? "Calculator" --> doCenterFloat
+            , title =? "File Operation Progress" --> doCenterFloat
+            , title =? "NVIDIA X Server Settings" --> doCenterFloat
+            , title =? "Orage" --> doCenterFloat
+            ]
+        }
 
 newKeys x  =
-    M.union (keys xfceConfig x) (M.fromList (myKeys x))
+    M.union (keys xfceConfig x) (M.fromList (shortcuts x))
   where
-    myKeys x =
+    shortcuts x =
         [ ((modMask x, xK_f), fullFloatFocused)
         ]
+    fullFloatFocused = withFocused $ \f -> windows =<< appEndo `fmap` runQuery doFullFloat f
 
 addPrefix p ms conf =
     M.singleton p . submap $ M.mapKeys (first chopMod) (ms conf)
-    where
+  where
     mod = modMask conf
     chopMod = (.&. complement mod)
-
-fullFloatFocused =
-    withFocused $ \f -> windows =<< appEndo `fmap` runQuery doFullFloat f
 
 -- xmonad-log-applet hook
 
@@ -89,9 +84,9 @@ dbusOutput dbus str = do
 
 pangoColor :: String -> String -> String
 pangoColor fg = wrap left right
- where
-  left  = "<span foreground=\"" ++ fg ++ "\">"
-  right = "</span>"
+  where
+    left  = "<span foreground=\"" ++ fg ++ "\">"
+    right = "</span>"
 
 pangoSanitize :: String -> String
 pangoSanitize = foldr sanitize ""
