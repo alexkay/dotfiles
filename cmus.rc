@@ -1,0 +1,5 @@
+set replaygain=album
+set show_current_bitrate=true
+set format_playlist=%2n. %-25%t %d %-25%a %y %-25%l %g
+set format_playlist_va=%2n. %-25%t %d %-25%A %y %-25%l %g
+fset doom=genre="Metal - Doom"
