@@ -1,9 +1,7 @@
 [core]
-       autocrlf = false
+       pager = less -S
 [user]
        name = Alexander Kojevnikov
        email = alexander@kojevnikov.com
 [color]
        ui = auto
-[svn]
-       rmdir = true
