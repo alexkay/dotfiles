@@ -5,3 +5,5 @@
        email = alexander@kojevnikov.com
 [color]
        ui = auto
+[push]
+	default = simple
