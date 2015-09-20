@@ -29,6 +29,7 @@ prompt wunjo
 WORDCHARS=${WORDCHARS//[-\/_.]}
 
 export GOPATH=$HOME
+export GO15VENDOREXPERIMENT=1
 export PATH=$HOME/.cabal/bin:$HOME/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 
 export EDITOR="emacsclient"
